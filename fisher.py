@@ -1,14 +1,9 @@
 import numpy as np
 import cv2
-from mss.linux import MSS as mss
-from PIL import Image
 import time
-import pyautogui as pg
-import imutils
 import mss
 import numpy
 import pyautogui
-from matplotlib import pyplot as plt
 
 def bobber(coord):
     left, top, long = bait[coord]
@@ -24,7 +19,8 @@ image = np.array(sct.grab(monitor))
 template = cv2.imread("11.png", cv2.IMREAD_GRAYSCALE)
 w, h = template.shape[::-1]
 
-too_far_away =[(0, 0), (1, 0), (2, 0), (6, 0), (0, 1), (1, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+too_far_away =[(0, 0), (1, 0), (2, 0), (6, 0), (0, 1), (1, 1), (0, 2), (0, 3), (0, 4), (0, 5),
+               (0, 6), (0, 7), (0, 8), (0, 9), (1, 8)]
 water = []
 bait = {(3, 0): (73, 380, 1),
         (4, 0): (73, 490, 0.6),
@@ -39,7 +35,14 @@ bait = {(3, 0): (73, 380, 1),
         (5, 2): (267, 600, 0.39),
         (1, 3): (364, 184, 0.36),
         (5, 3): (364, 600, 0.39),
-        (1, 4): (482, 192, 0.2)}
+        (1, 4): (482, 192, 0.2),
+        (1, 6): (650, 170, 0.4),
+        (4, 6): (610, 480, 0.101),
+        (5, 6): (650, 570, 0.22),
+        (4, 7): (750, 484, 0.25),
+        (2, 8): (850, 280, 1),
+        (1, 7): (750, 170, 1),
+        (2, 7): (750, 285, 0.45)}
 
 for i in range(10):
     for j in range(7):
@@ -71,7 +74,7 @@ while True:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             edges = cv2.Canny(img, 200, 300)
             mean = np.mean(edges)
-            trashhold = 0.9
+            trashhold = 0.85
             if top >= 4:
                 trashhold = 0.6
             if fmean == 0:
