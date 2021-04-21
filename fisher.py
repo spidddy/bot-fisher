@@ -4,12 +4,12 @@ import time
 import mss
 import numpy
 import pyautogui
-
+time.sleep(5)
 def bobber(coord):
     left, top, long = bait[coord]
     pyautogui.moveTo(left, top, duration=1)
     pyautogui.mouseDown(button='left')
-    pyautogui.moveTo(470, 200, duration=long)
+    pyautogui.moveTo(left+30, top+30, duration=long)
     pyautogui.mouseUp(button='left')
 
 sct = mss.mss()
@@ -102,32 +102,34 @@ while True:
             else:
                 print('Oh, yea')
                 pyautogui.press('1')
-
         bobber(square)
         time.sleep(1)
         top, left = square
         mon = {'top': top*100+40, 'left': left*100, 'width': 100, 'height': 100}
         mmax = 0
-        fmean = 0
+        firstmean = 0
+        minmean = 100
+        trashhold = 0
         while True:
             sct = mss.mss()
             img = np.array(sct.grab(mon))
-            time.sleep(0.01)
+            time.sleep(0.03)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             edges = cv2.Canny(img, 200, 300)
             mean = np.mean(edges)
-            trashhold = 0.85
-            if top >= 4:
-                trashhold = 0.6
-            if fmean == 0:
-                fmean = mean
-            if fmean - mean > mmax:
-                mmax = fmean - mean
+            cv2.imshow('000', edges)
+            cv2.waitKey(5)
+#            trashhold -= 0.001
+            if firstmean == 0:
+                firstmean = mean
+            firstmean = (firstmean + mean)/2
+            if mean < minmean:
+                minmean = mean
 
-            print(mmax, trashhold)
+            print(firstmean, minmean, mean)
 
 
-            if fmean - mean > trashhold:
+            if mean < firstmean - 0.3:
                 pyautogui.click(button='left')
                 print('КЛЮЕТ')
     #            pyautogui.click(button='left')
