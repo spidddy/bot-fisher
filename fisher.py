@@ -118,6 +118,7 @@ while True:
             edges = cv2.Canny(img, 200, 300)
             mean = np.mean(edges)
             cv2.imshow('000', edges)
+            cv2.moveWindow('000', 400, 800)
             cv2.waitKey(5)
 #            trashhold -= 0.001
             if firstmean == 0:
@@ -126,7 +127,7 @@ while True:
             if mean < minmean:
                 minmean = mean
 
-            print(firstmean, minmean, mean)
+#            print(firstmean, minmean, mean)
 
 
             if mean < firstmean - 0.3:
@@ -135,40 +136,32 @@ while True:
     #            pyautogui.click(button='left')
     #            time.sleep(5)
                 break
-        op = 1
-        with mss.mss() as sct:
-            old_x = 0
-            time_wait = 1
-            while True:
-                img = numpy.array(sct.grab(monitor))
-                gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                res = cv2.matchTemplate(gray_frame, template, cv2.TM_CCOEFF_NORMED)
-                loc = np.where(res >= 0.7)
-                op += 1
-                print(op)
-                for pt in zip(*loc[::-1]):
-                    for p in img:
-        #                cv2.rectangle(img, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 3)
-                        x = pt[0]
-                        print('X coord: ', x)
-                        if 400 < x < 600:
-                            pyautogui.mouseDown(button='left')
-                            if old_x != 0:
-                                print('Разница', old_x - x)
-                                if old_x - x > 10:
-                                    time_wait = time_wait + 0.5
-                                if old_x - x < -10 and time_wait > 0.5:
-                                    time_wait = time_wait - 0.5
-                            else:
-                                old_x = x
-                            time.sleep(time_wait)
-                            print('x===', x)
-                            pyautogui.mouseUp(button='left')
-                            break
-                        else:
-                            continue
-                    break
-                if op > 70:
-                    break
+        time.sleep(0.1)
+        op = 0
+        while True:
+            op += 1
+            print(op)
+            image = np.array(sct.grab({"top": 390, "left": 400, "width": 230, "height": 90}))
+            gray_frame = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            res = cv2.matchTemplate(gray_frame, template, cv2.TM_CCOEFF_NORMED)
+            loc = np.where(res >= 0.7)
+            if len(loc[::-1][0]) != 0:
+                x = loc[::-1][0][0]
+                y = loc[::-1][1][0]
+                print(x, y)
+                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                if x < 110:
+                    pyautogui.mouseDown(button='left')
+                if x > 150:
+                    pyautogui.mouseUp(button='left')
+            else:
+                pyautogui.mouseUp(button='left')
+                time.sleep(1)
+                break
+
+
+            cv2.imshow('Bait', image)
+            cv2.moveWindow('Bait', 100, 840)
+            cv2.waitKey(1)
 
 #cv2.waitKey()
